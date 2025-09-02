@@ -15,9 +15,9 @@ interface PaginationProps {
   currentPage: number
 }
 interface ListLayoutProps {
-  posts: CoreContent<Blog>[]
+  posts: Record<string, any>[]
   title: string
-  initialDisplayPosts?: CoreContent<Blog>[]
+  initialDisplayPosts?: Record<string, any>[]
   pagination?: PaginationProps
 }
 
@@ -146,7 +146,9 @@ export default function ListLayoutWithTags({
                             </Link>
                           </h2>
                           <div className="flex flex-wrap">
-                            {tags?.map((tag) => <Tag key={tag} text={tag} />)}
+                            {tags?.map((tag) => (
+                              <Tag key={tag} text={tag} />
+                            ))}
                           </div>
                         </div>
                         <div className="prose max-w-none text-gray-500 dark:text-gray-400">

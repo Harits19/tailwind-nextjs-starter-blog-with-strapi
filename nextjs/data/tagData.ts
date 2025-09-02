@@ -1,6 +1,13 @@
-export interface TagResponse {
+import { Blog } from "./blogData"
+import { baseUrl } from "./constants"
+
+export interface TagListResponse {
   data: Tag[]
   meta: Meta
+}
+
+export interface TagResponse {
+  data: Tag
 }
 
 export interface Tag {
@@ -9,8 +16,8 @@ export interface Tag {
   name: string
   createdAt: string
   updatedAt: string
-  publishedAt: string,
-  blogs?: []
+  publishedAt: string
+  blogs?: Blog[]
 }
 
 export interface Meta {
@@ -26,9 +33,10 @@ export interface Pagination {
 
 
 export async function getTags() {
-  const res = await fetch(`http://localhost:1337/api/tags?populate=blogs`, {
+  const res = await fetch(`${baseUrl}/tags?populate=blogs`, {
     cache: 'no-store', // biar tidak di-cache (SSR fresh data)
   })
   if (!res.ok) throw new Error('Failed to fetch data')
-  return res.json() as Promise<TagResponse>
+  return res.json() as Promise<TagListResponse>
 }
+

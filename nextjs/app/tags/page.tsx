@@ -8,16 +8,14 @@ export const metadata = genPageMetadata({ title: 'Tags', description: 'Things I 
 
 export default async function Page() {
   const res = await getTags()
-  const tagData = res.data.reduce<Record<string, { count: number; id: number }>>((prev, curr) => {
-    prev[curr.name] = {
-      count: curr.blogs?.length ?? 0,
-      id: curr.id,
-    }
+  const tagData = res.data.reduce<Record<string, number>>((prev, curr: any) => {
+    prev[curr.name] = curr.blogs.length ?? 0
     return prev
   }, {})
 
-  const tagKeys = Object.keys(tagData)
-  const sortedTags = tagKeys.sort((a, b) => tagData[b].count - tagData[a].count)
+  const tagCounts = tagData as Record<string, number>
+  const tagKeys = Object.keys(tagCounts)
+  const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
   return (
     <>
       <div className="flex flex-col items-start justify-start divide-y divide-gray-200 md:mt-24 md:flex-row md:items-center md:justify-center md:space-x-6 md:divide-y-0 dark:divide-gray-700">
@@ -29,16 +27,15 @@ export default async function Page() {
         <div className="flex max-w-lg flex-wrap">
           {tagKeys.length === 0 && 'No tags found.'}
           {sortedTags.map((t) => {
-            const id = tagData[t].id
             return (
               <div key={t} className="mt-2 mr-5 mb-2">
-                <Tag text={t} id={id} />
+                <Tag text={t} />
                 <Link
-                  href={`/tags/${id}`}
+                  href={`/tags/${slug(t)}`}
                   className="-ml-2 text-sm font-semibold text-gray-600 uppercase dark:text-gray-300"
                   aria-label={`View posts tagged ${t}`}
                 >
-                  {` (${tagData[t].count})`}
+                  {` (${tagCounts[t]})`}
                 </Link>
               </div>
             )
