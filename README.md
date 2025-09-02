@@ -4,3 +4,4 @@ yarn install
 
 cp strapi/.env.example .env
 
+yarn dev:all
