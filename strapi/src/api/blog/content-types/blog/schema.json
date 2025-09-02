@@ -19,6 +19,9 @@
       "relation": "manyToMany",
       "target": "api::tag.tag",
       "mappedBy": "blogs"
+    },
+    "date": {
+      "type": "datetime"
     }
   }
 }
