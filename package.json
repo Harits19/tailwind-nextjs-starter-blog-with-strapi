@@ -1,0 +1,17 @@
+{
+  "name": "tailwind-nextjs-starter-blog-with-strapi",
+  "packageManager": "yarn@4.9.4",
+  "private": true,
+  "workspaces": [
+    "nextjs",
+    "strapi"
+  ],
+  "scripts": {
+    "dev:web": "yarn workspace nextjs dev",
+    "dev:cms": "yarn workspace strapi develop",
+    "dev:all": "concurrently \"yarn dev:web\" \"yarn dev:cms\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
