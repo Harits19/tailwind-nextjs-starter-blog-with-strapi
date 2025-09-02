@@ -2,27 +2,22 @@ import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import { slug } from 'github-slugger'
 import { genPageMetadata } from 'app/seo'
+import { getTags } from '@/data/tagData'
 
 export const metadata = genPageMetadata({ title: 'Tags', description: 'Things I blog about' })
 
-async function getTags() {
-  const res = await fetch(`http://localhost:1337/api/tags?populate=blogs`, {
-    cache: 'no-store', // biar tidak di-cache (SSR fresh data)
-  })
-  if (!res.ok) throw new Error('Failed to fetch data')
-  return res.json()
-}
-
 export default async function Page() {
   const res = await getTags()
-  const tagData = (res.data as []).reduce((prev, curr: any) => {
-    prev[curr.name] = curr.blogs.length ?? 0
+  const tagData = res.data.reduce<Record<string, { count: number; id: number }>>((prev, curr) => {
+    prev[curr.name] = {
+      count: curr.blogs?.length ?? 0,
+      id: curr.id,
+    }
     return prev
   }, {})
 
-  const tagCounts = tagData as Record<string, number>
-  const tagKeys = Object.keys(tagCounts)
-  const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
+  const tagKeys = Object.keys(tagData)
+  const sortedTags = tagKeys.sort((a, b) => tagData[b].count - tagData[a].count)
   return (
     <>
       <div className="flex flex-col items-start justify-start divide-y divide-gray-200 md:mt-24 md:flex-row md:items-center md:justify-center md:space-x-6 md:divide-y-0 dark:divide-gray-700">
@@ -34,15 +29,16 @@ export default async function Page() {
         <div className="flex max-w-lg flex-wrap">
           {tagKeys.length === 0 && 'No tags found.'}
           {sortedTags.map((t) => {
+            const id = tagData[t].id
             return (
               <div key={t} className="mt-2 mr-5 mb-2">
-                <Tag text={t} />
+                <Tag text={t} id={id} />
                 <Link
-                  href={`/tags/${slug(t)}`}
+                  href={`/tags/${id}`}
                   className="-ml-2 text-sm font-semibold text-gray-600 uppercase dark:text-gray-300"
                   aria-label={`View posts tagged ${t}`}
                 >
-                  {` (${tagCounts[t]})`}
+                  {` (${tagData[t].count})`}
                 </Link>
               </div>
             )
