@@ -1,14 +1,11 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { slug } from 'github-slugger'
 import { formatDate } from 'pliny/utils/formatDate'
-import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
-import tagData from 'app/tag-data.json'
+import { useGetTagCount } from '@/data/tagData'
 
 interface PaginationProps {
   totalPages: number
@@ -17,7 +14,6 @@ interface PaginationProps {
 interface ListLayoutProps {
   posts: Record<string, any>[]
   title: string
-  initialDisplayPosts?: Record<string, any>[]
   pagination?: PaginationProps
 }
 
@@ -66,18 +62,11 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
   )
 }
 
-export default function ListLayoutWithTags({
-  posts,
-  title,
-  initialDisplayPosts = [],
-  pagination,
-}: ListLayoutProps) {
+export default function ListLayoutWithTags({ posts, title, pagination }: ListLayoutProps) {
   const pathname = usePathname()
-  const tagCounts = tagData as Record<string, number>
+  const { data: tagCounts = {} } = useGetTagCount()
   const tagKeys = Object.keys(tagCounts)
   const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
-
-  const displayPosts = initialDisplayPosts.length > 0 ? initialDisplayPosts : posts
 
   return (
     <>
@@ -104,13 +93,13 @@ export default function ListLayoutWithTags({
                 {sortedTags.map((t) => {
                   return (
                     <li key={t} className="my-3">
-                      {decodeURI(pathname.split('/tags/')[1]) === slug(t) ? (
+                      {decodeURI(pathname.split('/tags/')[1]) === t ? (
                         <h3 className="text-primary-500 inline px-3 py-2 text-sm font-bold uppercase">
                           {`${t} (${tagCounts[t]})`}
                         </h3>
                       ) : (
                         <Link
-                          href={`/tags/${slug(t)}`}
+                          href={`/tags/${t}`}
                           className="hover:text-primary-500 dark:hover:text-primary-500 px-3 py-2 text-sm font-medium text-gray-500 uppercase dark:text-gray-300"
                           aria-label={`View posts tagged ${t}`}
                         >
@@ -125,7 +114,7 @@ export default function ListLayoutWithTags({
           </div>
           <div>
             <ul>
-              {displayPosts.map((post) => {
+              {posts.map((post) => {
                 const { path, date, title, summary, tags } = post
                 return (
                   <li key={path} className="py-5">

@@ -2,18 +2,12 @@ import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import { slug } from 'github-slugger'
 import { genPageMetadata } from 'app/seo'
-import { getTags } from '@/data/tagData'
+import { getTagsCount } from '@/data/tagData'
 
 export const metadata = genPageMetadata({ title: 'Tags', description: 'Things I blog about' })
 
 export default async function Page() {
-  const res = await getTags()
-  const tagData = res.data.reduce<Record<string, number>>((prev, curr: any) => {
-    prev[curr.name] = curr.blogs.length ?? 0
-    return prev
-  }, {})
-
-  const tagCounts = tagData as Record<string, number>
+  const tagCounts = await getTagsCount()
   const tagKeys = Object.keys(tagCounts)
   const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
   return (

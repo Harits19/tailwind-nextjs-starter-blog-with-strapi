@@ -1,5 +1,6 @@
-import { Blog } from "./blogData"
-import { baseUrl } from "./constants"
+import useMySWR from 'hooks/swr'
+import { Blog } from './blogData'
+import { baseUrl } from './constants'
 
 export interface TagListResponse {
   data: Tag[]
@@ -31,7 +32,6 @@ export interface Pagination {
   total: number
 }
 
-
 export async function getTags() {
   const res = await fetch(`${baseUrl}/tags?populate=blogs`, {
     cache: 'no-store', // biar tidak di-cache (SSR fresh data)
@@ -40,3 +40,16 @@ export async function getTags() {
   return res.json() as Promise<TagListResponse>
 }
 
+export async function getTagsCount() {
+  const res = await getTags()
+  const tagData = res.data.reduce<Record<string, number>>((prev, curr: any) => {
+    prev[curr.name] = curr.blogs.length ?? 0
+    return prev
+  }, {})
+
+  return tagData
+}
+
+export function useGetTagCount() {
+  return useMySWR('tags', getTagsCount)
+}
