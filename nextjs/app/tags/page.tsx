@@ -1,12 +1,25 @@
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import { slug } from 'github-slugger'
-import tagData from 'app/tag-data.json'
 import { genPageMetadata } from 'app/seo'
 
 export const metadata = genPageMetadata({ title: 'Tags', description: 'Things I blog about' })
 
+async function getTags() {
+  const res = await fetch(`http://localhost:1337/api/tags?populate=blogs`, {
+    cache: 'no-store', // biar tidak di-cache (SSR fresh data)
+  })
+  if (!res.ok) throw new Error('Failed to fetch data')
+  return res.json()
+}
+
 export default async function Page() {
+  const res = await getTags()
+  const tagData = (res.data as []).reduce((prev, curr: any) => {
+    prev[curr.name] = curr.blogs.length ?? 0
+    return prev
+  }, {})
+
   const tagCounts = tagData as Record<string, number>
   const tagKeys = Object.keys(tagCounts)
   const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
