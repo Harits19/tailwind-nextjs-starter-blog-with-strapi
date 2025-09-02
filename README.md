@@ -2,6 +2,6 @@
 
 yarn install
 
-cp strapi/.env.example .env
+cp strapi/.env.example strapi/.env
 
 yarn dev:all
