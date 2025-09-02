@@ -91,9 +91,11 @@ export default function ListLayoutWithTags({ posts, title, pagination }: ListLay
               )}
               <ul>
                 {sortedTags.map((t) => {
+                  const currentTag = decodeURI(pathname.split('/tags/')[1])
+
                   return (
                     <li key={t} className="my-3">
-                      {decodeURI(pathname.split('/tags/')[1]) === t ? (
+                      {currentTag.startsWith(t) ? (
                         <h3 className="text-primary-500 inline px-3 py-2 text-sm font-bold uppercase">
                           {`${t} (${tagCounts[t]})`}
                         </h3>
