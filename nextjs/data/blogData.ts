@@ -1,9 +1,10 @@
+import { stringify } from 'qs'
 import { baseUrl } from './constants'
 import { Tag } from './tagData'
 
 export interface BlogListResponse {
   data: Blog[]
-  meta: { pagination: { page: number, pageSize: number, pageCount: number, total: number } }
+  meta: { pagination: { page: number; pageSize: number; pageCount: number; total: number } }
 }
 
 export interface Blog {
@@ -46,13 +47,15 @@ export async function getListBlog({
     params['pagination[withCount]'] = true
   }
 
-  const queryParams = new URLSearchParams(params)
-  const res = await fetch(`${baseUrl}/blogs?${queryParams.toString()}`, {
+  params['sort'] = 'date:desc'
+
+  const query = stringify(params, { encodeValuesOnly: true })
+
+  const url = `${baseUrl}/blogs?${query}`
+  const res = await fetch(url, {
     cache: 'no-store',
   })
   const response = (await res.json()) as BlogListResponse
-
-  console.log('res', response)
 
   if (!res.ok) throw new Error('Failed to fetch data')
 

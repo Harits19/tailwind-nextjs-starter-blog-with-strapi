@@ -7,9 +7,9 @@
     "strapi"
   ],
   "scripts": {
-    "dev:web": "yarn workspace nextjs dev",
-    "dev:cms": "yarn workspace strapi develop",
-    "dev:all": "concurrently \"yarn dev:web\" \"yarn dev:cms\""
+    "dev:nextjs": "yarn workspace nextjs dev",
+    "dev:strapi": "yarn workspace strapi develop",
+    "dev:all": "concurrently \"yarn dev:nextjs\" \"yarn dev:strapi\""
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
