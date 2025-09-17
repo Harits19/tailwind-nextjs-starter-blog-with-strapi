@@ -12,7 +12,9 @@
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "export": "yarn strapi export --no-encrypt --file backup",
+    "import": "yarn strapi import -f backup.tar.gz"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.23.1",
